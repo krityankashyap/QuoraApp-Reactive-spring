@@ -9,7 +9,11 @@ import com.example.QuoraApp.DTOs.QuestionResponseDTO;
 import com.example.QuoraApp.services.IQuestionService;
 
 import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -24,5 +28,15 @@ public class QuestionController {
                           .doOnSuccess(success -> System.out.println("Question created successfully: " + success))
                           .doOnError(error -> System.out.println("Error creating question: " + error.getMessage()));
   }
+
+  @GetMapping("/search")
+  public Flux<QuestionResponseDTO> searchQuestion(@RequestParam String query, 
+    @RequestParam(defaultValue = "0") int offset, 
+    @RequestParam(defaultValue = "10") int page) {
+    return questionService.searchQuestion(query, offset, page)
+                          .doOnError(error -> System.out.println("Error searching questions: " + error.getMessage()))
+                          .doOnComplete(() -> System.out.println("Search completed successfully"));
+  }
+  
 
 }
