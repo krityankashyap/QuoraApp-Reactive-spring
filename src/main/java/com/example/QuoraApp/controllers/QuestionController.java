@@ -47,4 +47,12 @@ public class QuestionController {
                            .doOnError(error -> System.out.println("Error fetching questions: " + error.getMessage()))
                            .doOnComplete(() -> System.out.println("Fetch completed successfully"));
   }
+
+  @GetMapping("/{id}")
+  public Mono<QuestionResponseDTO> getQuestionById(@RequestParam String id){
+    return questionService.getQuestionById(id)
+                          .doOnError(error -> System.out.println("Error fetching question by ID: " + error.getMessage()))
+                          .doOnSuccess(success -> System.out.println("Question fetched successfully: " + success));
+  }
+  
 }
