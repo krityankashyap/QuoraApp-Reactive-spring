@@ -13,6 +13,7 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 
 @Configuration
@@ -46,5 +47,10 @@ public class KafkaConfig {
     configProcess.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringSerializer.class);
 
     return new DefaultKafkaConsumerFactory<>(configProcess);
+  }
+
+  @Bean
+  public KafkaTemplate<String, Object> kafkaTemplate(){
+    return new KafkaTemplate<>(producerFactory());
   }
 }
