@@ -17,8 +17,13 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 
+import lombok.Getter;
+import lombok.Setter;
+
 @Configuration
 @EnableKafka
+@Setter
+@Getter
 public class KafkaConfig {
   
   @Value("${kafka.bootstrap-servers:localhost:9092}")  // Default value is localhost:9092 if not set in application.properties
@@ -27,7 +32,7 @@ public class KafkaConfig {
   @Value("${kafka.group-id:count-view-question}")  
   private String groupId;
 
-  private static final String TOPIC_NAME= "count-view-question";
+  public static final String TOPIC_NAME= "count-view-question";
 
   @Bean
   public ProducerFactory<String, Object> producerFactory(){
