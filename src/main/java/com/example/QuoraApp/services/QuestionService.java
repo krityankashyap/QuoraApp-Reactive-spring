@@ -58,14 +58,20 @@ public class QuestionService implements IQuestionService {
              .doOnComplete(() -> System.out.println("fetch completed successfully"));
     } else {
       LocalDateTime cursorTimeStamp= CursorUtils.parseCursor(cursor);
-      return questionRespo.findByCreatedAtGreaterThanOrderByCreatedAtAsc(cursorTimeStamp, pageable)
-      .map(QuestionAdapter::toResponseDTO)
-      .doOnError(error-> System.out.println("Error fetching questions: " + error.getMessage()))
-      .doOnComplete(() -> System.out.println("Fetch completed successfully"));
-
-
+        return questionRespo.findByCreatedAtGreaterThanOrderByCreatedAtAsc(cursorTimeStamp, pageable)
+        .map(QuestionAdapter::toResponseDTO)
+        .doOnError(error-> System.out.println("Error fetching questions: " + error.getMessage()))
+        .doOnComplete(() -> System.out.println("Fetch completed successfully"));
+      }
     }
-
+  
+    @Override
+    public Mono<QuestionResponseDTO> getQuestionById(String questionId){
+      return questionRespo.findById(questionId)
+              .map(QuestionAdapter::toResponseDTO)
+              .doOnError(error-> System.out.println("Error fetching question by Id: " + error.getMessage()))
+              .doOnSuccess(success-> System.out.println("Fetch question by Id completed successfully"));
+    }
   }
 
-}
+
