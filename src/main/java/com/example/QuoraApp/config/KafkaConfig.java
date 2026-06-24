@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
+import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
@@ -50,7 +51,18 @@ public class KafkaConfig {
   }
 
   @Bean
-  public KafkaTemplate<String, Object> kafkaTemplate(){
+  public KafkaTemplate<String, Object> kafkaTemplate(){ 
     return new KafkaTemplate<>(producerFactory());
+  }
+
+  // now in kafka there is a function inside consumer which pulls the object from kafka..or raises the poll so that it can get the object from kafka and then it can be processed in the consumer service class
+
+  @Bean
+  public ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerContainerFactory() {
+    ConcurrentKafkaListenerContainerFactory<String, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
+    factory.setConsumerFactory(consumerFactory());
+    factory.setConcurrency(3);
+
+    return factory;
   }
 }
