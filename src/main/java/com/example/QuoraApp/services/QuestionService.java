@@ -2,6 +2,7 @@ package com.example.QuoraApp.services;
 
 import java.time.LocalDateTime;
 
+import org.apache.kafka.clients.producer.KafkaProducer;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -9,7 +10,9 @@ import org.springframework.stereotype.Service;
 import com.example.QuoraApp.DTOs.QuestionRequestDTO;
 import com.example.QuoraApp.DTOs.QuestionResponseDTO;
 import com.example.QuoraApp.adapters.QuestionAdapter;
+import com.example.QuoraApp.events.ViewCountEvent;
 import com.example.QuoraApp.models.Question;
+import com.example.QuoraApp.producers.kafkaEventProducer;
 import com.example.QuoraApp.repository.QuestionRespo;
 import com.example.QuoraApp.utils.CursorUtils;
 
@@ -22,7 +25,12 @@ import reactor.core.publisher.Mono;
 public class QuestionService implements IQuestionService {
   
 
+  private final kafkaEventProducer kafkaEventProducer;
+
   private final QuestionRespo questionRespo;
+
+  private final KafkaProducer<String, String> kafkaProducer;
+
 
   @Override
   public Mono<QuestionResponseDTO> createQuestion(QuestionRequestDTO questionsRequestDTO) {
@@ -70,7 +78,17 @@ public class QuestionService implements IQuestionService {
       return questionRespo.findById(questionId)
               .map(QuestionAdapter::toResponseDTO)
               .doOnError(error-> System.out.println("Error fetching question by Id: " + error.getMessage()))
-              .doOnSuccess(success-> System.out.println("Fetch question by Id completed successfully"));
+              .doOnSuccess(response-> {
+                System.out.println("Fetch question by Id completed successfully");
+                // Create a ViewCountEvent and publish it to Kafka
+                ViewCountEvent viewCountEvent= ViewCountEvent.builder()  
+                                                .targetId(questionId)
+                                                .targetType("question")
+                                                .timestamp(LocalDateTime.now())
+                                                .build();
+
+                  kafkaEventProducer.publishViewCountEvent(viewCountEvent);    // Publish the view count event to Kafka when a question is fetched by ID                           
+              });
     }
   }
 

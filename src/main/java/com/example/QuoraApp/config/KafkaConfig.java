@@ -18,12 +18,14 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Configuration
 @EnableKafka
 @Setter
 @Getter
+@RequiredArgsConstructor
 public class KafkaConfig {
   
   @Value("${kafka.bootstrap-servers:localhost:9092}")  // Default value is localhost:9092 if not set in application.properties
