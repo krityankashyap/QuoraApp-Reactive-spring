@@ -2,7 +2,6 @@ package com.example.QuoraApp.services;
 
 import java.time.LocalDateTime;
 
-import org.apache.kafka.clients.producer.KafkaProducer;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -28,9 +27,6 @@ public class QuestionService implements IQuestionService {
   private final kafkaEventProducer kafkaEventProducer;
 
   private final QuestionRespo questionRespo;
-
-  private final KafkaProducer<String, String> kafkaProducer;
-
 
   @Override
   public Mono<QuestionResponseDTO> createQuestion(QuestionRequestDTO questionsRequestDTO) {

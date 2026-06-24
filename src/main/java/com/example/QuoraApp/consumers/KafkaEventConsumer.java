@@ -23,7 +23,10 @@ public class KafkaEventConsumer {
   public void handleViewCountEvent(ViewCountEvent viewCountEvent) {
       questionRespo.findById(viewCountEvent.getTargetId())
       .flatMap(question -> {
-        int views= question.getViews();
+        Integer views = question.getViews();
+        if (views == null) {
+          views = 0;
+        }
         question.setViews(views + 1);
         return questionRespo.save(question);
       })
