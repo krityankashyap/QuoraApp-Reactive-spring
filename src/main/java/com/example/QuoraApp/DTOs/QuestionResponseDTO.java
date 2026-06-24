@@ -1,6 +1,7 @@
 package com.example.QuoraApp.DTOs;
 
-import java.time.LocalDate;
+
+import java.time.LocalDateTime;
 
 import lombok.*;
 
@@ -17,5 +18,5 @@ public class QuestionResponseDTO {
 
   private String content;
 
-  private LocalDate createdAt;
+  private LocalDateTime createdAt;
 }

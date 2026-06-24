@@ -38,5 +38,13 @@ public class QuestionController {
                           .doOnComplete(() -> System.out.println("Search completed successfully"));
   }
   
-
+  @GetMapping()
+  public Flux<QuestionResponseDTO> getAllQuestion(
+    @RequestParam(required = false) String cursor,
+    @RequestParam(defaultValue = "10") int size
+  ) {
+     return questionService.getAllQuestions(cursor, size)
+                           .doOnError(error -> System.out.println("Error fetching questions: " + error.getMessage()))
+                           .doOnComplete(() -> System.out.println("Fetch completed successfully"));
+  }
 }
