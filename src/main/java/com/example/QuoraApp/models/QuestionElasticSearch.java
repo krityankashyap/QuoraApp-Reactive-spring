@@ -1,0 +1,25 @@
+package com.example.QuoraApp.models;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Document(indexName = "questions")
+public class QuestionElasticSearch {
+
+  @Id
+  private String id;
+
+  private String title;
+
+  private String content;
+
+}
