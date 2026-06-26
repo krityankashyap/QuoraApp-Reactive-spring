@@ -1,8 +1,11 @@
 package com.example.QuoraApp.services;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.example.QuoraApp.DTOs.*;
+import com.example.QuoraApp.models.QuestionElasticSearch;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -17,4 +20,6 @@ public interface IQuestionService {
   public Flux<QuestionResponseDTO> getAllQuestions(String cursor, int size);
 
   public Mono<QuestionResponseDTO> getQuestionById(String questionId);
+
+  public List<QuestionElasticSearch> searchQuestionByElasticSearch(String query);
 }

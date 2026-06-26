@@ -1,6 +1,7 @@
 package com.example.QuoraApp.services;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -11,7 +12,9 @@ import com.example.QuoraApp.DTOs.QuestionResponseDTO;
 import com.example.QuoraApp.adapters.QuestionAdapter;
 import com.example.QuoraApp.events.ViewCountEvent;
 import com.example.QuoraApp.models.Question;
+import com.example.QuoraApp.models.QuestionElasticSearch;
 import com.example.QuoraApp.producers.kafkaEventProducer;
+import com.example.QuoraApp.repository.QuestionDocumentRepository;
 import com.example.QuoraApp.repository.QuestionRespo;
 import com.example.QuoraApp.utils.CursorUtils;
 
@@ -23,8 +26,9 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class QuestionService implements IQuestionService {
   
-
+  private final IQuestionIndexService questionService;
   private final kafkaEventProducer kafkaEventProducer;
+  private final QuestionDocumentRepository questionDocumentRepository;
 
   private final QuestionRespo questionRespo;
 
@@ -38,7 +42,10 @@ public class QuestionService implements IQuestionService {
                       .build();
 
                 return questionRespo.save(question)
-                       .map(QuestionAdapter::toResponseDTO)
+                       .map(savedQuestion -> {
+                           questionService.createQuestionIndex(savedQuestion);  // Create an index for the saved question in Elasticsearch
+                           return QuestionAdapter.toResponseDTO(savedQuestion);
+                       })
                        .doOnSuccess(success-> System.out.println("Question created successfully"))
                        .doOnError(error-> System.out.println("Error creating question: " + error.getMessage()));
   }
@@ -85,6 +92,10 @@ public class QuestionService implements IQuestionService {
 
                   kafkaEventProducer.publishViewCountEvent(viewCountEvent);    // Publish the view count event to Kafka when a question is fetched by ID                           
               });
+    }
+
+    public List<QuestionElasticSearch> searchQuestionByElasticSearch(String query){
+      return questionDocumentRepository.findByTitleContainingOrContentContaining(query, query);
     }
   }
 

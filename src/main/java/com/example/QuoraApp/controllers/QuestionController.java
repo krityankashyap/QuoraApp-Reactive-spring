@@ -6,11 +6,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.QuoraApp.DTOs.QuestionRequestDTO;
 import com.example.QuoraApp.DTOs.QuestionResponseDTO;
+import com.example.QuoraApp.models.QuestionElasticSearch;
+import com.example.QuoraApp.services.IQuestionIndexService;
 import com.example.QuoraApp.services.IQuestionService;
 
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -53,6 +58,11 @@ public class QuestionController {
     return questionService.getQuestionById(id)
                           .doOnError(error -> System.out.println("Error fetching question by ID: " + error.getMessage()))
                           .doOnSuccess(success -> System.out.println("Question fetched successfully: " + success));
+  }
+
+  @GetMapping("/elasticSearch")
+  public List<QuestionElasticSearch> getAllQuestionsFromElasticSearch(@RequestParam String query) {
+    return questionService.searchQuestionByElasticSearch(query);
   }
   
 }
